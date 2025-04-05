@@ -1,0 +1,10 @@
+{
+	"AdminPhotosBucketName": "dev-temp008goochy-admin-photos-0affcff57b31",
+	"EnvironmentName": "DEV",
+	"UserPoolClientId": "720b5i1ri7b50dsjq9dhlt7o6k",
+	"UserPoolId": "us-east-1_YdbQ3qJ0a",
+	"PrimaryRegionName": "us-east-1",
+	"IdentityPoolId": "us-east-1:6760c5fc-be26-439e-b41f-bfa4ff5ebf53",
+	"ApiEndpoint-PrimaryRegion": "https://17pfd8gq70.execute-api.us-east-1.amazonaws.com/prod/DEV-temp011Goochy",
+	"ApiEndpoint-LastReplicaRegion": "https://309asulhvl.execute-api.eu-central-1.amazonaws.com/prod/DEV-temp011Goochy"
+}
