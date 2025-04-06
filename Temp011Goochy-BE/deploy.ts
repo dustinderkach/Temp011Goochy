@@ -71,11 +71,15 @@ const installDependencies = async (): Promise<void> => {
 
 // Step 1: Deploy Initial CDK Stack
 const deployInitialCdkStack = (env: string): void => {
-	log("🚀 Deploying initial CDK stack...");
-	runCommandWithRetry(
-		`cdk deploy --all --outputs-file outputs.json --require-approval never --context env=${env} --verbose`
-	);
-	log("✅ Initial CDK stack deployed successfully.");
+    log("🚀 Deploying initial CDK stack...");
+
+    // Explicitly deploy the dynamically generated stack name
+    const stackName = `${env}-Temp011GoochyLambdaStack-PrimaryRegion`;
+    runCommandWithRetry(
+        `cdk deploy ${stackName} --outputs-file outputs.json --require-approval never --context env=${env} --verbose`
+    );
+
+    log("✅ Initial CDK stack deployed successfully.");
 };
 
 // Step 2: Build Frontend App
@@ -87,11 +91,15 @@ const buildFrontendApp = (): void => {
 
 // Step 3: Deploy CDK Stack Again (Upload Frontend to S3)
 const deployCdkStackWithFrontend = (env: string): void => {
-	log("🚀 Deploying CDK stack again to upload frontend...");
-	runCommandWithRetry(
-		`cdk deploy --all --outputs-file outputs.json --require-approval never --context env=${env} --verbose`
-	);
-	log("✅ CDK stack deployed with frontend successfully.");
+    log("🚀 Deploying CDK stack again to upload frontend...");
+
+    // Explicitly deploy the dynamically generated stack name
+    const stackName = `${env}-Temp011GoochyLambdaStack-PrimaryRegion`;
+    runCommandWithRetry(
+        `cdk deploy ${stackName} --outputs-file outputs.json --require-approval never --context env=${env} --verbose`
+    );
+
+    log("✅ CDK stack deployed with frontend successfully.");
 };
 
 // Step 4: Run Outputs Filter Script

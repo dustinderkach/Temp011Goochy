@@ -36,6 +36,14 @@ export class Temp011GoochyLambdaStack extends Stack {
 			}
 		);
 
+		const parameterArn = `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/${props.envName}/Temp011GoochyAdminPhotosBucketArn`;
+		const parameterName = `/${props.envName}/Temp011GoochyAdminPhotosBucketArn`;
+		// Write the parameter ARN to the console
+		console.log("SSM Parameter ARN:", parameterArn);
+		console.log("SSM Parameter Name:", parameterName);
+		console.log("SSM Parameter Value:", props.bucketArn);
+		console.log("SSM Parameter Region:", props.env?.region);
+
 		const temp011GoochyLambda = new NodejsFunction(
 			this,
 			`${props.envName}-Temp011GoochyLambda`,
@@ -45,9 +53,9 @@ export class Temp011GoochyLambdaStack extends Stack {
 				entry: join(
 					__dirname,
 					"..",
-					"..",
+					"..", // Move up two directories to reach 'src'
 					"services",
-					"Temp011Goochy",
+					"temp011Goochy",
 					"handlerTemp011Goochy.ts"
 				),
 				environment: {
@@ -56,6 +64,12 @@ export class Temp011GoochyLambdaStack extends Stack {
 				},
 				tracing: Tracing.ACTIVE,
 				timeout: Duration.minutes(1),
+				// bundling: {
+				// 	minify: true,
+				// 	sourceMap: true,
+				// 	target: "node18",
+				// 	externalModules: ["aws-sdk"], // Exclude AWS SDK since it's available in the Lambda runtime
+				// },
 			}
 		);
 
@@ -77,9 +91,7 @@ export class Temp011GoochyLambdaStack extends Stack {
 			new PolicyStatement({
 				effect: Effect.ALLOW,
 				actions: ["ssm:GetParameter"],
-				resources: [
-					`arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/${props.envName}/Temp011GoochyAdminPhotosBucketArn`,
-				],
+				resources: [parameterArn],
 			})
 		);
 		console.log("Retrieved Bucket ARN:", `${props.bucketArn}/*`);

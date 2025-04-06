@@ -76,8 +76,6 @@ allRegions.forEach((region) => {
 			regionName = "PrimaryRegion";
 		}
 
-
-
 		let lambdaStack = new Temp011GoochyLambdaStack(
 			app,
 			`${envName}-Temp011GoochyLambdaStack-${regionName}`,

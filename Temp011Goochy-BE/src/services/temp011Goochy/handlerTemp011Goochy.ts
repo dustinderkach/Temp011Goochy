@@ -78,4 +78,5 @@ async function handlerTemp011Goochy(
 	return response;
 }
 
-export { handlerTemp011Goochy};
+
+export { handlerTemp011Goochy };

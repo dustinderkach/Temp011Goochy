@@ -2,7 +2,6 @@ import { Stack, StackProps, CfnOutput, PhysicalName } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { getSuffixFromStack } from "../Utils";
 import { Bucket, HttpMethods, ObjectOwnership } from "aws-cdk-lib/aws-s3";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
 
 interface Temp011GoochyS3StackProps extends StackProps {
 	envName: string;
