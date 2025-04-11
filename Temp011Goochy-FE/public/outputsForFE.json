@@ -1,8 +1,8 @@
 {
-  "AdminPhotosBucketName": "dev-temp008goochy-admin-photos-0affce28c5ab",
+  "AdminPhotosBucketName": "dev-temp008goochy-admin-photos-1241890fb5eb",
   "EnvironmentName": "DEV",
-  "UserPoolClientId": "22q77bop6kpv233c7kktab3lvb",
-  "IdentityPoolId": "us-east-1:1efb7a30-85fe-4f30-a78a-e8e168c1d865",
-  "UserPoolId": "us-east-1_kA2tPZmTE",
+  "UserPoolClientId": "1ca3qj1b1obpjtj5hqejcrj8s3",
+  "IdentityPoolId": "us-east-1:dd017757-d213-48f7-909a-0c010ab9722d",
+  "UserPoolId": "us-east-1_ch1EZfCN0",
   "PrimaryRegionName": "us-east-1"
 }

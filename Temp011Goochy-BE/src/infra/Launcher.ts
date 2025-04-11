@@ -68,7 +68,7 @@ const dataStack = new Temp011GoochyDataStack(
 dataStack.addDependency(authStack);
 
 allRegions.forEach((region) => {
-	const replicaTable = dataStack.getReplicaTable(region);
+	const replicaTable = dataStack.getAppReplicaTable(region);
 
 	if (replicaTable) {
 		let regionName = region;
