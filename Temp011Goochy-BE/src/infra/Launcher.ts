@@ -68,9 +68,10 @@ const dataStack = new Temp011GoochyDataStack(
 dataStack.addDependency(authStack);
 
 allRegions.forEach((region) => {
-	const replicaTable = dataStack.getAppReplicaTable(region);
+	const appReplicaTable = dataStack.getAppTableByRegion(region); //
+	const configReplicaTable = dataStack.getConfigTableByRegion(region);
 
-	if (replicaTable) {
+	if (appReplicaTable && configReplicaTable) {
 		let regionName = region;
 		if (region === env.primaryRegion) {
 			regionName = "PrimaryRegion";
@@ -80,10 +81,12 @@ allRegions.forEach((region) => {
 			app,
 			`${envName}-Temp011GoochyLambdaStack-${regionName}`,
 			{
-				env: { account: env.account, region }, // Add this line
-				tableArn: replicaTable.tableArn,
+				env: { account: env.account, region },
+				tableArn: appReplicaTable.tableArn,
+				tableName: appReplicaTable.tableName,
+				tableConfigArn: configReplicaTable.tableArn,
+				tableConfigName: configReplicaTable.tableName,
 				crossRegionReferences: true,
-				tableName: replicaTable.tableName,
 				envName: envName,
 				bucketName: s3Stack.photosBucket.bucketName,
 				bucketArn: s3Stack.photosBucket.bucketArn,

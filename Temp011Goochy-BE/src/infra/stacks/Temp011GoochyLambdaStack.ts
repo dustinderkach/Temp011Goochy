@@ -6,11 +6,13 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import { join } from "path";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
+import * as AWS from "aws-sdk";
 
 interface Temp011GoochyLambdaStackProps extends StackProps {
 	tableArn: string;
 	tableName: string;
+	tableConfigArn: string;
+	tableConfigName: string;
 	envName: string;
 	bucketName: string;
 	bucketArn: string;
@@ -26,23 +28,23 @@ export class Temp011GoochyLambdaStack extends Stack {
 	) {
 		super(scope, id, props);
 
-		// Create the SSM parameter in the same region as the Lambda stack
-		const bucketArnParameter = new StringParameter(
-			this,
-			`/${props.envName}/Temp011GoochyAdminPhotosBucketArn`,
-			{
-				parameterName: `/${props.envName}/Temp011GoochyAdminPhotosBucketArn`,
-				stringValue: props.bucketArn, // Use the ARN passed from the S3 stack
-			}
-		);
+		// // Create the SSM parameter in the same region as the Lambda stack
+		// const bucketArnParameter = new StringParameter(
+		// 	this,
+		// 	`/${props.envName}/Temp011GoochyAdminPhotosBucketArn`,
+		// 	{
+		// 		parameterName: `/${props.envName}/Temp011GoochyAdminPhotosBucketArn`,
+		// 		stringValue: props.bucketArn, // Use the ARN passed from the S3 stack
+		// 	}
+		// );
 
-		const parameterArn = `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/${props.envName}/Temp011GoochyAdminPhotosBucketArn`;
-		const parameterName = `/${props.envName}/Temp011GoochyAdminPhotosBucketArn`;
-		// Write the parameter ARN to the console
-		console.log("SSM Parameter ARN:", parameterArn);
-		console.log("SSM Parameter Name:", parameterName);
-		console.log("SSM Parameter Value:", props.bucketArn);
-		console.log("SSM Parameter Region:", props.env?.region);
+		// const parameterArn = `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/${props.envName}/Temp011GoochyAdminPhotosBucketArn`;
+		// const parameterName = `/${props.envName}/Temp011GoochyAdminPhotosBucketArn`;
+		// // Write the parameter ARN to the console
+		// console.log("SSM Parameter ARN:", parameterArn);
+		// console.log("SSM Parameter Name:", parameterName);
+		// console.log("SSM Parameter Value:", props.bucketArn);
+		// console.log("SSM Parameter Region:", props.env?.region);
 
 		const temp011GoochyLambda = new NodejsFunction(
 			this,
@@ -73,6 +75,39 @@ export class Temp011GoochyLambdaStack extends Stack {
 			}
 		);
 
+		temp011GoochyLambda.addEnvironment(
+			"CONFIG_TABLE_NAME",
+			props.tableConfigName
+		);
+
+		// Write the bucket ARN to the configuration table
+		const configTablePutItemPolicy = new PolicyStatement({
+			effect: Effect.ALLOW,
+			actions: ["dynamodb:PutItem"],
+			resources: [props.tableConfigArn], // Use the ARN of the configuration table
+		});
+
+		temp011GoochyLambda.addToRolePolicy(configTablePutItemPolicy);
+
+		// Add the bucket ARN to the configuration table during stack creation
+		const bucketArnItem = {
+			TableName: props.tableConfigName, // Name of the configuration table
+			Item: {
+				ConfigKey: { S: "Temp011GoochyAdminPhotosBucketArn" }, // Key for the configuration item
+				ConfigValue: { S: props.bucketArn }, // Value to store (the bucket ARN)
+			},
+		};
+
+		// Use the AWS SDK to write the item to the table
+		const dynamodb = new AWS.DynamoDB();
+		dynamodb.putItem(bucketArnItem, (err, data) => {
+			if (err) {
+				console.error("Error writing to config table:", err);
+			} else {
+				console.log("Successfully wrote to config table:", data);
+			}
+		});
+
 		temp011GoochyLambda.addToRolePolicy(
 			new PolicyStatement({
 				effect: Effect.ALLOW,
@@ -86,14 +121,23 @@ export class Temp011GoochyLambdaStack extends Stack {
 				],
 			})
 		);
-
 		temp011GoochyLambda.addToRolePolicy(
 			new PolicyStatement({
 				effect: Effect.ALLOW,
-				actions: ["ssm:GetParameter"],
-				resources: [parameterArn],
+				resources: [props.tableConfigArn],
+				actions: [
+					"dynamodb:Scan",
+					"dynamodb:GetItem",
+				],
 			})
 		);
+		// temp011GoochyLambda.addToRolePolicy(
+		// 	new PolicyStatement({
+		// 		effect: Effect.ALLOW,
+		// 		actions: ["ssm:GetParameter"],
+		// 		resources: [parameterArn],
+		// 	})
+		// );
 		console.log("Retrieved Bucket ARN:", `${props.bucketArn}/*`);
 		// Add permissions for S3 (NEW)
 		temp011GoochyLambda.addToRolePolicy(

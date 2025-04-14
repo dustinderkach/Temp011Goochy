@@ -31,6 +31,7 @@ export class Temp011GoochyS3Stack extends Stack {
 					],
 					allowedOrigins: ["*"],
 					allowedHeaders: ["*"],
+					exposedHeaders: ["ETag"], // Allow clients to access the ETag header
 				},
 			],
 			objectOwnership: ObjectOwnership.OBJECT_WRITER,
